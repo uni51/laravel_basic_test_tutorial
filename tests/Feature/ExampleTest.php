@@ -7,9 +7,25 @@ use Tests\TestCase;
 
 class ExampleTest extends TestCase
 {
+    protected function setUp(): void
+    {
+        parent::setUp();
+
+        dump('setUp');
+    }
+
+    protected function tearDown(): void
+    {
+        dump('tearDown');
+
+        parent::tearDown();
+    }
+
     public function test_sample1(): void
     {
         $response = $this->get('/');
+
+        dump('sample1');
 
         $response->assertStatus(200);
     }
@@ -18,7 +34,8 @@ class ExampleTest extends TestCase
     {
         $response = $this->get('/');
 
-        $response->assertStatus(200);
+        dump('sample2');
+
         $response->assertStatus(200);
     }
 }
