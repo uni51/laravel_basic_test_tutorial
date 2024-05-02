@@ -3,6 +3,7 @@
 namespace Tests\Feature\Models;
 
 use App\Models\Post;
+use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Foundation\Testing\WithFaker;
 use Tests\TestCase;
@@ -18,5 +19,14 @@ class PostTest extends TestCase
 
         $this->assertTrue($posts->contains($open));
         $this->assertFalse($posts->contains($closed));
+    }
+
+    public function test_PostのbelongsTo()
+    {
+        $post = Post::factory()->create();
+
+        $instance = $post->user;
+
+        $this->assertInstanceOf(User::class, $instance);
     }
 }
