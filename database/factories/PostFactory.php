@@ -31,4 +31,11 @@ class PostFactory extends Factory
             'status' => 0,
         ]);
     }
+
+    public function random()
+    {
+        return $this->state(fn (array $attrs) => [
+            'status' => fake()->randomElement([1, 1, 1, 1, 0]),
+        ]);
+    }
 }
