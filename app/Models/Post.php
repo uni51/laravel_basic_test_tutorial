@@ -10,6 +10,8 @@ class Post extends Model
     use HasFactory;
     const OPEN = 1;
 
+    protected $guarded = [];
+
     public function user()
     {
         return $this->belongsTo(User::class);
