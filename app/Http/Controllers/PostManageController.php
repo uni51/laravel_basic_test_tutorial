@@ -56,4 +56,16 @@ class PostManageController extends Controller
         return to_route('posts.edit', $post)
             ->with('status', 'ブログを更新しました');
     }
+
+    public function destroy(Post $post)
+    {
+        if (auth()->user()->isNot($post->user)) {
+            abort(403);
+        }
+
+        $post->delete();
+
+        return to_route('posts.index')
+            ->with('status', 'ブログを削除しました');
+    }
 }

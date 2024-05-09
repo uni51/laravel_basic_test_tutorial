@@ -113,4 +113,28 @@ class PostManageControllerTest extends TestCase
         // fresh() が挟まっていますが、これは、DB から最新のデータを引っ張ってくる為のメソッドです
         $this->assertSame('元のブログタイトル', $post->fresh()->title);
     }
+
+    public function test_自分のブログは削除できる()
+    {
+        $post = Post::factory()->create();
+
+        $this->login($post->user);
+
+        $this->delete(route('posts.destroy', $post))
+            ->assertRedirect(route('posts.index'));
+
+        $this->assertModelMissing($post);
+    }
+
+    public function test_他人様のブログを削除はできない()
+    {
+        $post = Post::factory()->create();
+
+        $this->login();
+
+        $this->delete(route('posts.destroy', $post))
+            ->assertForbidden();
+
+        $this->assertModelExists($post);
+    }
 }
