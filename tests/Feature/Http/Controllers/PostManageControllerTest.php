@@ -72,4 +72,45 @@ class PostManageControllerTest extends TestCase
         $this->get(route('posts.edit', $post))
             ->assertForbidden();
     }
+
+    public function test_自分のブログは更新できる()
+    {
+        $validData = [
+            'title' => '新タイトル',
+            'body' => '新本文',
+            'status' => '1',
+        ];
+
+        $post = Post::factory()->create();
+
+        $this->login($post->user);
+
+        $this->put(route('posts.update', $post), $validData)
+            ->assertRedirect(route('posts.edit', $post));
+
+        $this->get(route('posts.edit', $post))
+            ->assertSee('ブログを更新しました');
+
+        $this->assertDatabaseHas('posts', $validData);
+        $this->assertDatabaseCount('posts', 1); // 誤って「更新」ではなく「新規追加」の処理をしていないかの確認
+    }
+
+    public function test_他人様のブログは更新できない()
+    {
+        $validData = [
+            'title' => '新タイトル',
+            'body' => '新本文',
+            'status' => '1',
+        ];
+
+        $post = Post::factory()->create(['title' => '元のブログタイトル']);
+
+        $this->login();
+
+        $this->put(route('posts.update', $post), $validData)
+            ->assertForbidden();
+
+        // fresh() が挟まっていますが、これは、DB から最新のデータを引っ張ってくる為のメソッドです
+        $this->assertSame('元のブログタイトル', $post->fresh()->title);
+    }
 }

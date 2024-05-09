@@ -38,4 +38,22 @@ class PostManageController extends Controller
 
         return view('members.posts.edit', compact('post', 'data'));
     }
+
+    public function update(Post $post, Request $request)
+    {
+        if (auth()->user()->isNot($post->user)) {
+            abort(403);
+        }
+
+        $data = $request->validate([
+            'title' => ['required', 'string', 'max:255'],
+            'body' => ['required', 'string', 'max:10000'],
+            'status' => ['required', 'integer', 'in:0,1'],
+        ]);
+
+        $post->update($data);
+
+        return to_route('posts.edit', $post)
+            ->with('status', 'ブログを更新しました');
+    }
 }
