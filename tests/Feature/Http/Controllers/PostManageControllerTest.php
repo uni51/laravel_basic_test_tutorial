@@ -75,11 +75,13 @@ class PostManageControllerTest extends TestCase
 
     public function test_自分のブログは更新できる()
     {
-        $validData = [
-            'title' => '新タイトル',
-            'body' => '新本文',
-            'status' => '1',
-        ];
+//        $validData = [
+//            'title' => '新タイトル',
+//            'body' => '新本文',
+//            'status' => '1',
+//        ];
+
+        $validData = $this->validData();
 
         $post = Post::factory()->create();
 
@@ -97,11 +99,13 @@ class PostManageControllerTest extends TestCase
 
     public function test_他人様のブログは更新できない()
     {
-        $validData = [
-            'title' => '新タイトル',
-            'body' => '新本文',
-            'status' => '1',
-        ];
+//        $validData = [
+//            'title' => '新タイトル',
+//            'body' => '新本文',
+//            'status' => '1',
+//        ];
+
+        $validData = $this->validData();
 
         $post = Post::factory()->create(['title' => '元のブログタイトル']);
 
@@ -136,5 +140,46 @@ class PostManageControllerTest extends TestCase
             ->assertForbidden();
 
         $this->assertModelExists($post);
+    }
+
+    private function validData(array $overrides = [])
+    {
+        return array_merge([
+            'title' => '新タイトル',
+            'body' => '新本文',
+            'status' => '1',
+        ], $overrides);
+    }
+
+    public function test_投稿一覧、本文でヒット()
+    {
+        $me = $this->login();
+
+        Post::factory()->for($me)->createMany([
+            ['title' => '信長のタイトル', 'body' => '信長の本文'],
+            ['title' => '家康のタイトル', 'body' => '家康の本文'],
+        ]);
+
+        $response = $this->get('members/posts?kword=信長の本');
+
+        $response
+            ->assertOk()
+            ->assertSee('信長のタイトル')
+            ->assertDontSee('家康のタイトル');
+    }
+
+    public function test_投稿一覧、本文でヒットその2()
+    {
+        $me = $this->login();
+
+        Post::factory()->for($me)->createMany([
+            ['body' => '信長の本文'],
+            ['body' => '家康の本文'],
+        ]);
+
+        $response = $this->get('members/posts?kword=信長の本');
+
+        $this->assertTrue($response['posts']->contains('body', '信長の本文'));
+        $this->assertFalse($response['posts']->contains('body', '家康の本文'));
     }
 }

@@ -9,7 +9,28 @@ class PostManageController extends Controller
 {
     public function index()
     {
-        $posts = auth()->user()->posts;
+//        $posts = auth()->user()->posts;
+
+        $validator = \Validator::make(request()->all(), [
+            'kword' => ['nullable', 'string', 'max:100'],
+        ]);
+
+        abort_if($validator->fails(), 422);
+
+        $data = $validator->validated();
+
+        $query = Post::query()
+            ->where('user_id', auth()->user()->id);
+
+        // キーワード検索
+        if ($val = data_get($data, 'kword')) {
+            $query->where(function ($query) use ($val) {
+                $query->where('title', 'LIKE', '%'.$val.'%')
+                    ->orWhere('body', 'LIKE', '%'.$val.'%');
+            });
+        }
+
+        $posts = $query->get();
 
         return view('members.posts.index', compact('posts'));
     }
