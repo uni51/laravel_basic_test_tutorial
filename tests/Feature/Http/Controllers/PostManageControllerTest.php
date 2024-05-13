@@ -2,13 +2,17 @@
 
 namespace Tests\Feature\Http\Controllers;
 
+use App\Http\Middleware\IpLimit;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Foundation\Testing\WithFaker;
 use Tests\TestCase;
 use App\Models\Post;
+//use Illuminate\Foundation\Testing\WithoutMiddleware;
 
 class PostManageControllerTest extends TestCase
 {
+    // use WithoutMiddleware;
+
     /**
      * A basic feature test example.
      */
@@ -126,6 +130,8 @@ class PostManageControllerTest extends TestCase
 
     public function test_自分のブログは削除できる()
     {
+        // $this->withoutMiddleware([IpLimit::class]);
+
         $post = Post::factory()->create();
 
         $this->login($post->user);
