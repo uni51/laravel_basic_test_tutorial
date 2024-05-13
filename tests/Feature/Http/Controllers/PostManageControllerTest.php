@@ -188,4 +188,11 @@ class PostManageControllerTest extends TestCase
         $this->assertTrue($response['posts']->contains('body', '信長の本文'));
         $this->assertFalse($response['posts']->contains('body', '家康の本文'));
     }
+
+    public function test_他人様のブログの編集画面は開けない_まだ未完成()
+    {
+        $this->markTestIncomplete();
+
+        // $this->markTestIncomplete('急用が入ったので一旦停止'); // コメント付き
+    }
 }
