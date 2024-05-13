@@ -48,6 +48,12 @@ class PostManageControllerTest extends TestCase
 
         $response->assertRedirect(route('posts.edit', Post::first()));
 
+        $this->get(route('posts.edit', Post::first()))
+            ->assertOk()
+            ->assertSee('ブログを登録しました');
+
+        // $response->assertSessionHas('status', 'ブログを登録しました');
+
         $this->assertDatabaseHas('posts',
             array_merge($validData, ['user_id' => $me->id])
         );
