@@ -63,6 +63,28 @@ class PostManageControllerTest extends TestCase
         );
     }
 
+    public function test_ブログ登録時の入力チェック()
+    {
+        $url = route('posts.store');
+
+        $this->login();
+
+        app()->setLocale('testing');
+
+        // 何も入力しないで送信した際は、リダイレクトされるのをまずは確認
+        $this->post($url, [])->assertRedirect('/');
+
+        // タイトルの入力チェック
+        $this->post($url, ['title' => ''])->assertInvalid(['title' => 'required']); // title が空の場合
+        $this->post($url, ['title' => ['aa' => 'bb']])->assertInvalid('title'); // title が配列の場合
+        $this->post($url, ['title' => str_repeat('a', 256)])->assertInvalid('title'); // title が256文字以上の場合
+
+        // status の入力チェック
+        $this->post($url, ['status' => ''])->assertInvalid('status'); // status が空の場合
+        $this->post($url, ['status' => 'aa'])->assertInvalid('status'); // status が文字列の場合
+        $this->post($url, ['status' => '3'])->assertInvalid('status'); // status が文字の場合
+    }
+
     public function test_自分のブログの編集画面は開ける()
     {
         $post = Post::factory()->create();
