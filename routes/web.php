@@ -5,6 +5,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\PostController;
 use App\Http\Controllers\PostManageController;
+use App\Http\Controllers\AvatarController;
 use App\Http\Middleware\IpLimit;
 
 Route::get('/', function () {
@@ -17,6 +18,10 @@ Route::get('login', function () {
 
 Route::get('users', [UserController::class, 'index']);
 Route::get('posts', [PostController::class, 'index']);
+Route::get('avatar', [AvatarController::class, 'index']);
+Route::post('avatar', [AvatarController::class, 'store']);
+
+
 Route::middleware('auth')->group(function () {
     // 認証が必要なページ
     Route::get('members', [MemberController::class, 'index']);
